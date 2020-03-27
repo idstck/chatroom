@@ -6,10 +6,13 @@
                     <div class="card-header">Chat Room</div>
 
                     <div id="chat-box" class="card-body bg-secondary">
-                        <div class="media bg-light rounded">
+                        <div
+                            class="media m-2 bg-light rounded"
+                            v-for="(chat, index) in messages" :key="index"
+                        >
                             <div class="media-body m-2">
-                                <h5 class="mt-0">Username</h5>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi, veritatis laborum illo recusandae enim maxime? Ducimus assumenda qui necessitatibus atque voluptatum velit dolor illo, fuga soluta nam earum facilis eum?
+                                <h5 class="mt-0">{{ chat.user.name }}</h5>
+                                {{ chat.message }}
                             </div>
                         </div>
                     </div>
@@ -55,6 +58,16 @@
         },
 
         methods: {
+            fetchMessage() {
+                axios.get('/fetch')
+                    .then((result) => {
+                        this.messages = result.data;
+                        console.log(result.data);
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+            },
+
             sendMessage() {
                 this.messages.push({
                     user: this.user,
@@ -77,6 +90,8 @@
         },
 
         mounted() {
+            this.fetchMessage();
+
             Echo.join('chat')
                 .listen('ChatSent', (e) => {
                     console.log(e);
